@@ -23,7 +23,8 @@ public class Character : MonoBehaviour
 	[HideInInspector] public bool alive = true;
 	[HideInInspector] public bool sticky = false;
 	[HideInInspector] public Vector3 spawnPosition;
-	[HideInInspector] public Vector3 mousePosition;
+	//[HideInInspector] public Vector3 mousePosition;
+	private Mouse mouse;
 
 	protected Transform _transform;
 	protected Rigidbody2D _rigidbody;
@@ -46,62 +47,53 @@ public class Character : MonoBehaviour
 	private int jumps = 0;
     private int maxJumps = 2; 		// set to 2 for double jump
 		
-	protected bool needsToPoop = false;
+	protected bool hasPoop = false;
 
 	// raycast stuff
 	private RaycastHit2D hit;
 	private Vector2 physVel = new Vector2();
 	[HideInInspector] public bool grounded = false;
+
 	private int groundMask = 1 << 8; // Ground layer mask
 
 	public virtual void Awake()
 	{
 		_transform = transform;
 		_rigidbody = GetComponent<Rigidbody2D>();
+
 	}
 	
 	// Use this for initialization
 	public virtual void Start () 
 	{
 		moveVel = 1;
-		mousePosition = Input.mousePosition;
+		//mousePosition = Input.mousePosition;
+		mouse = new Mouse ();
+		mouse.getPosition ();
 	}
 	
 	// Update is called once per frame
 	public virtual void UpdateMovement() 
 	{
-
 		//special case
 		// TODO: Give actual xa for the game's state
-		if(false == true || alive == false) return;
+		if(xa.gameOver == true || alive == false) return;
 
-		/*
-		 * Let the players x position be moved with force
-		 * Greater distance from mouse == greater force added to x
-		 * x++ if mouse.x > player.x, x-- if mouse.x < player.x
-		 */
 		//float moveSpeed = 0.1f;
 		float moveSpeed = 0.01f;
-		mousePosition = Input.mousePosition;
 
-		mousePosition = Camera.main.ScreenToWorldPoint(mousePosition);
-        _transform.position = Vector2.Lerp(_transform.position, mousePosition, moveSpeed);
-		mousePosition.z = _transform.position.z;
-		_transform.position = Vector3.MoveTowards ( _transform.position, mousePosition, moveSpeed * Time.deltaTime);
+		_transform.position = Vector2.Lerp(_transform.position, mouse.getWorldPoint(), moveSpeed);
 
-		// teleport me to the other side of the screen when I reach the edge
-		if(_transform.position.x > 4f)
-		{
-			_transform.position = new Vector3(-4f,_transform.position.y, 0);
-		}
-		if(_transform.position.x < -4f)
-		{
-			_transform.position = new Vector3(4f,_transform.position.y, 0);
-		}
+		// TODO: Replace this line with call to to set Mouse.setZ
+
+		_transform.position = Vector3.MoveTowards (
+			_transform.position, mouse.getPosition(), moveSpeed * Time.deltaTime); // TESTING
 
 		// logic for jumping  
-		if (Input.GetMouseButtonDown(0))  // 0 is the left-click
-		{}
+		if (Input.GetMouseButtonDown(0))  // 0 is the left-click TESTING
+		{
+			moveSpeed = 0;
+		}
 	}
 	
 	// ============================== FIXEDUPDATE ============================== 
@@ -147,6 +139,11 @@ public class Character : MonoBehaviour
 				}
 			}
 		}
+		/*
+		 * Let the players x position be moved with force
+		 * Greater distance from mouse == greater force added to x
+		 * x++ if mouse.x > player.x, x-- if mouse.x < player.x
+		 */
 
 		// Jump handler Logic
 		//  void jumpHandler( int )

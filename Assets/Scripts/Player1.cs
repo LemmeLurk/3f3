@@ -19,7 +19,6 @@ public class Player1 : Character
 		{
 			Application.LoadLevel(0);
 		}
-		
 		UpdateMovement();
 	}
 

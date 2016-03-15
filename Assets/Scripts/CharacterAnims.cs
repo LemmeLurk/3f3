@@ -21,7 +21,7 @@ public class CharacterAnims : MonoBehaviour
 	private anim currentAnim;
 
 	// hash the animation state string to save performance
-	private int _p1AnimState = Animator.StringToHash("P1AnimState");
+	private int _p1AnimState = Animator.StringToHash("PlayerState");
 	private int _animState;
 
 	void Awake()
